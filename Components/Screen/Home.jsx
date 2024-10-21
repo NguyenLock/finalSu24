@@ -1,4 +1,4 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -62,6 +62,14 @@ export default function Home() {
     }));
   };
 
+  const renderItem = ({ item }) => (
+    <PlayerCard
+      {...item}
+      isFavorite={favorites[item.id]}
+      onFavoritePress={handleFavoritePress}
+    />
+  );
+
   if (loading) {
     return (
       <View style={styles.centerContainer}>
@@ -79,18 +87,16 @@ export default function Home() {
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.playersGrid}>
-        {players.map((player) => (
-          <PlayerCard
-            key={player.id}
-            {...player}
-            isFavorite={favorites[player.id]}
-            onFavoritePress={handleFavoritePress}
-          />
-        ))}
-      </View>
-    </ScrollView>
+    <View style={styles.container}>
+      <FlatList
+        data={players}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={styles.listContainer}
+      />
+    </View>
   );
 }
 
@@ -99,16 +105,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+  listContainer: {
+    padding: 5,
+  },
+  row: {
+    justifyContent: 'space-between',
+  },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  playersGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 5,
-    justifyContent: 'space-between',
   },
   card: {
     backgroundColor: '#fff',
@@ -120,9 +126,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 3,
     marginTop: 20,
-    flex: 1,
-    marginHorizontal: 5,
-    maxWidth: '48%',
+    width: '48%', // Thay đổi từ flex: 1 sang width cố định
   },
   imageContainer: {
     position: 'relative',
