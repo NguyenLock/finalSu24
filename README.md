@@ -4,4 +4,4 @@ after download u go to file u save the project open it,
 copy the project u need and paste in Practical Exam before u submit Practical u should check all comment and delete do not submit with comment u will fail the exam,
 edit u code and enjoy it! Good Luck.
 - All Package U need to install before Exam 
-npm install @react-native-async-storage/async-storage @react-navigation/bottom-tabs @react-navigation/native @react-navigation/stack expo-status-bar react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens react-native-vector-icons
+- npm install @react-native-async-storage/async-storage @react-navigation/bottom-tabs @react-navigation/native @react-navigation/stack expo-status-bar react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-screens react-native-vector-icons
