@@ -1,10 +1,16 @@
 import { View, Text, Image, StyleSheet, TouchableOpacity, FlatList } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
 
-const PlayerCard = ({ id, playerName, image, team, position, MinutesPlayed, PassingAccuracy, isFavorite, onFavoritePress }) => {
+const PlayerCard = ({ id, playerName, image, team, position, MinutesPlayed, PassingAccuracy, isFavorite, onFavoritePress,YoB, onPress, isCaptain }) => {
+
+  const calculateAge = (yearofBirth) =>{
+    const currentYear = new Date().getFullYear();
+    return currentYear - yearofBirth
+  }
   return (
-    <TouchableOpacity style={styles.card}>
+    <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={styles.imageContainer}>
         <Image 
           source={{ uri: image }} 
@@ -20,13 +26,10 @@ const PlayerCard = ({ id, playerName, image, team, position, MinutesPlayed, Pass
       </View>
       <View style={styles.playerInfo}>
         <Text style={styles.playerName}>{playerName}</Text>
-        <Text style={styles.teamName}>{team}</Text>
+        <Text style={styles.isCaptain}>{isCaptain ? 'Captain' : ''}</Text>
         <Text style={styles.position}>{position}</Text>
         <View style={styles.statsContainer}>
-          <Text style={styles.stats}>Minutes: {MinutesPlayed}</Text>
-          <Text style={styles.stats}>
-            Pass Accuracy: {(PassingAccuracy * 100).toFixed(1)}%
-          </Text>
+          <Text style={styles.stats}>Age: {calculateAge(YoB)}</Text>
         </View>
       </View>
     </TouchableOpacity>
@@ -34,6 +37,7 @@ const PlayerCard = ({ id, playerName, image, team, position, MinutesPlayed, Pass
 }
 
 export default function Home() {
+  const navigation = useNavigation();// add navigation de chuyen trang detail
   const [players, setPlayers] = useState([]);
   const [favorites, setFavorites] = useState({});
   const [loading, setLoading] = useState(true);
@@ -43,6 +47,9 @@ export default function Home() {
     fetchPlayers();
   }, []);
 
+  const handleCardPress = (player) =>{
+    navigation.navigate('Detail', { playerData: player });
+  };
   const fetchPlayers = async () => {
     try {
       const response = await fetch('https://668d4d89099db4c579f2807a.mockapi.io/api/v1/footballteam');
@@ -67,6 +74,7 @@ export default function Home() {
       {...item}
       isFavorite={favorites[item.id]}
       onFavoritePress={handleFavoritePress}
+      onPress={()=> handleCardPress(item)}
     />
   );
 

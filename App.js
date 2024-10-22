@@ -6,6 +6,8 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import Captians from './Components/Screen/Captians';
+import Detail from './Components/Screen/Detail';
 
 // Khởi tạo Bottom Tabs và Stack Navigator
 const Tab = createBottomTabNavigator();
@@ -40,6 +42,15 @@ function TabNavigator() {
           ),
         }}
       />
+      <Tab.Screen
+      name='Captians'
+      component={Captians}
+      options={{
+        tabBarIcon: ({color, size}) => (
+          <Icon name="users" size={size} color={color} />
+        )
+      }}
+      />
     </Tab.Navigator>
   );
 }
@@ -54,6 +65,10 @@ export default function App() {
           component={TabNavigator}
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+        name="Detail"
+        component={Detail}
+        options={{ headerShown: true, title:'Player Detail'}}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
