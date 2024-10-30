@@ -52,7 +52,7 @@ export default function Home() {
   };
   const fetchPlayers = async () => {
     try {
-      const response = await fetch('https://668d4d89099db4c579f2807a.mockapi.io/api/v1/footballteam');
+      const response = await fetch('https://672239742108960b9cc37869.mockapi.io/footballteam');
       const data = await response.json();
       setPlayers(data);
       setLoading(false);
