@@ -1,3 +1,5 @@
+// Favorite.js
+
 import React, { useContext, useEffect, useState } from 'react';
 import { 
   View, 
@@ -5,17 +7,16 @@ import {
   FlatList, 
   TouchableOpacity, 
   StyleSheet, 
-  Image 
+  Image, 
+  Alert 
 } from 'react-native';
 import { PlayerContext } from '../AsyncStorage/playerContext';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 
-// Component hiển thị thông tin của mỗi cầu thủ
 const PlayerCard = ({
   id, playerName, image, position, YoB, isCaptain, onFavoritePress, onPress
 }) => {
-  //ham tinh tuoi
   const calculateAge = (yearofBirth) => new Date().getFullYear() - yearofBirth;
 
   return (
@@ -36,29 +37,40 @@ const PlayerCard = ({
   );
 };
 
-// Trang Favorite hiển thị danh sách cầu thủ yêu thích
 export default function Favorite() {
   const navigation = useNavigation();
-  const { favoritePlayers, removePlayerFromFavorites } = useContext(PlayerContext);
-  const [sortedPlayers, setSortedPlayers] = useState([]);//ham sort
+  const { favoritePlayers, removePlayerFromFavorites, removeAllFavorites } = useContext(PlayerContext);
+  const [sortedPlayers, setSortedPlayers] = useState([]);// ham sort
 
-  // Sắp xếp danh sách cầu thủ yêu thích theo id giảm dần
+  //ham sort
   useEffect(() => {
     const sorted = [...favoritePlayers].sort((a, b) => b.id - a.id);
     setSortedPlayers(sorted);
   }, [favoritePlayers]);
 
-  // Hàm điều hướng đến trang chi tiết cầu thủ
+  //bam de vao detail
   const handleCardPress = (player) => {
     navigation.navigate('Detail', { playerData: player });
   };
 
-  // Hàm xử lý khi nhấn nút yêu thích
+  //xoa khoi yeu thich
   const handleFavoritePress = (id) => {
-    removePlayerFromFavorites(id); // Xóa cầu thủ khỏi danh sách yêu thích
+    removePlayerFromFavorites(id);
   };
 
-  // Render mỗi cầu thủ trong danh sách
+
+  //ham xoa tat ca cac cau thu yeu thich voi > 2 thi moi hien thung rac
+  const handleRemoveAll = () => {
+    Alert.alert(
+      "Confirm",
+      "Are you sure you want to remove all players from favorites?",
+      [
+        { text: "Cancel", style: "cancel" },
+        { text: "Yes", onPress: () => removeAllFavorites() }
+      ]
+    );
+  };
+
   const renderItem = ({ item }) => (
     <PlayerCard
       {...item}
@@ -67,29 +79,38 @@ export default function Favorite() {
     />
   );
 
-  // Nếu danh sách cầu thủ yêu thích rỗng
   if (sortedPlayers.length === 0) {
     return (
       <View style={styles.centerContainer}>
-        <Text>Chưa có cầu thủ yêu thích!</Text>
+        <Text>You don't have any favorite players!</Text>
       </View>
     );
   }
 
   return (
-    <FlatList
-      data={sortedPlayers} // Sử dụng danh sách cầu thủ đã sắp xếp
-      renderItem={renderItem}
-      keyExtractor={(item) => item.id.toString()}
-      numColumns={2}
-      columnWrapperStyle={styles.row}
-      contentContainerStyle={styles.listContainer}
-    />
+    <View style={styles.container}>
+      {/* Hiển thị biểu tượng thùng rác nếu có hơn 1 cầu thủ yêu thích */}
+      {sortedPlayers.length > 1 && (
+        <TouchableOpacity style={styles.trashIcon} onPress={handleRemoveAll}>
+          <Icon name="trash" size={28} color="red" />
+        </TouchableOpacity>
+      )}
+      <FlatList
+        data={sortedPlayers}
+        renderItem={renderItem}
+        keyExtractor={(item) => item.id.toString()}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        contentContainerStyle={styles.listContainer}
+      />
+    </View>
   );
 }
 
-// Styles cho giao diện
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
   centerContainer: {
     flex: 1,
     justifyContent: 'center',
@@ -150,5 +171,11 @@ const styles = StyleSheet.create({
     padding: 4,
     color: '#B22222',
     marginBottom: 5,
+  },
+  trashIcon: {
+    position: 'absolute',
+    top: 800,
+    right: 10,
+    zIndex: 1,
   },
 });

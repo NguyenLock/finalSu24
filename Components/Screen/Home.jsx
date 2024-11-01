@@ -290,9 +290,8 @@ const styles = StyleSheet.create({
     color: '#666',
   },
   captainText: {
-    fontSize: 10,
+    fontSize: 16,
     fontWeight: 'bold',
-    backgroundColor: '#FFD700',
     borderRadius: 12,
     padding: 4,
     color: '#B22222',

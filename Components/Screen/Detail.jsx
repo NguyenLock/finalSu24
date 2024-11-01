@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
     marginTop: 12,
     padding: 6,
     alignSelf: 'flex-start',
-    backgroundColor: '#FFD700',
     borderRadius: 12,
     color: '#B22222',
     textShadowColor: '#FFF',

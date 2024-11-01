@@ -2,12 +2,11 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // Dùng để lưu và tải dữ liệu từ bộ nhớ cục bộ
 
-// Khởi tạo một Context mới có tên là PlayerContext
+// Khởi tạo một Context mới có tên là PlayerContext để chia sẻ dữ liệu trong ứng dụng
 export const PlayerContext = createContext();
 
-// Tạo PlayerProvider để bao bọc các component con và cung cấp dữ liệu
+// Tạo PlayerProvider để bao bọc các component con và cung cấp dữ liệu từ context
 export const PlayerProvider = ({ children }) => {
-  
   // Khởi tạo state để lưu danh sách các cầu thủ yêu thích
   const [favoritePlayers, setFavoritePlayers] = useState([]);
 
@@ -50,13 +49,24 @@ export const PlayerProvider = ({ children }) => {
     }
   };
 
+  // Hàm xóa toàn bộ cầu thủ khỏi danh sách yêu thích và cập nhật AsyncStorage
+  const removeAllFavorites = async () => {
+    try {
+      setFavoritePlayers([]); // Xóa tất cả khỏi state
+      await AsyncStorage.removeItem('favoritePlayers'); // Xóa dữ liệu khỏi AsyncStorage
+    } catch (error) {
+      console.log('Failed to remove all players from favorites:', error); // Nếu có lỗi, in lỗi ra console
+    }
+  };
+
   // Trả về PlayerContext.Provider để cung cấp dữ liệu cho các component con
   return (
     <PlayerContext.Provider 
       value={{ 
         favoritePlayers, // Cung cấp danh sách cầu thủ yêu thích
         addPlayerToFavorites, // Cung cấp hàm thêm cầu thủ yêu thích
-        removePlayerFromFavorites // Cung cấp hàm xóa cầu thủ khỏi danh sách yêu thích
+        removePlayerFromFavorites, // Cung cấp hàm xóa cầu thủ khỏi danh sách yêu thích
+        removeAllFavorites // Cung cấp hàm xóa toàn bộ cầu thủ khỏi danh sách yêu thích
       }}
     >
       {children}
