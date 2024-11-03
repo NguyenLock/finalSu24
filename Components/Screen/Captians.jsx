@@ -1,18 +1,14 @@
-// Captains.js
-
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState, useContext } from 'react';
 import { 
   View, 
   Text, 
-  Image, 
-  StyleSheet, 
-  TouchableOpacity, 
   ScrollView, 
-  ActivityIndicator 
+  ActivityIndicator, 
+  StyleSheet 
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
 import { PlayerContext } from '../AsyncStorage/playerContext';
+import HorizontalCard from '../UI/HorizontalCard';
 
 export default function Captains() {
   const navigation = useNavigation();
@@ -41,12 +37,15 @@ export default function Captains() {
     fetchPlayers();
   }, []);
 
+  // Hàm tính tuổi cầu thủ dựa trên năm sinh
   const calculateAge = (yearOfBirth) => new Date().getFullYear() - yearOfBirth;
 
+  // Xử lý khi nhấn vào card cầu thủ để điều hướng đến màn hình chi tiết
   const handleCardPress = (player) => {
     navigation.navigate('Detail', { playerData: player });
   };
 
+  // Xử lý khi nhấn vào nút yêu thích
   const handleFavoritePress = (player) => {
     if (favoritePlayers.some(p => p.id === player.id)) {
       removePlayerFromFavorites(player.id);
@@ -69,32 +68,19 @@ export default function Captains() {
       <Text style={styles.title}>Captains Over 34 Years Old</Text>
       {captainsList.length > 0 ? (
         captainsList.map((item) => (
-          <TouchableOpacity 
-            key={item.id} 
-            style={styles.card} 
+          <HorizontalCard
+            key={item.id}
+            id={item.id}
+            playerName={item.playerName}
+            image={item.image}
+            position={item.position}
+            YoB={item.YoB}
+            MinutesPlayed={item.MinutesPlayed}
+            isFavorite={favoritePlayers.some(p => p.id === item.id)}
+            onFavoritePress={() => handleFavoritePress(item)}
             onPress={() => handleCardPress(item)}
-          >
-            {/* Hình ảnh bên trái */}
-            <Image source={{ uri: item.image }} style={styles.playerImage} resizeMode="cover" /> 
-            
-            {/* Thông tin bên phải */}
-            <View style={styles.infoContainer}>
-              <View style={styles.headerContainer}>
-                <Text style={styles.playerName}>{item.playerName}</Text>
-                <TouchableOpacity onPress={() => handleFavoritePress(item)}>
-                  <Icon 
-                    name={favoritePlayers.some(p => p.id === item.id) ? "heart" : "heart-o"} 
-                    size={24} 
-                    color="red" 
-                  />
-                </TouchableOpacity>
-              </View>
-              {item.isCaptain && <Text style={styles.captainText}>⚡ Captain</Text>} 
-              <Text style={styles.position}>{item.position}</Text>
-              <Text style={styles.stats}>Age: {calculateAge(item.YoB)}</Text>
-              <Text style={styles.stats}>Minutes Played: {item.MinutesPlayed}</Text>
-            </View>
-          </TouchableOpacity>
+            isCaptain={item.isCaptain}
+          />
         ))
       ) : (
         <Text style={styles.noCaptainsText}>No captains found over 34 years old.</Text>
@@ -120,48 +106,6 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  card: {
-    flexDirection: 'row', // Sắp xếp hàng ngang cho card
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 10,
-    marginVertical: 10,
-    elevation: 3,
-  },
-  playerImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 10,
-  },
-  infoContainer: {
-    flex: 1,
-  },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  playerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  position: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 5,
-  },
-  stats: {
-    fontSize: 12,
-    color: '#666',
-  },
-  captainText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#B22222',
-    marginBottom: 5,
   },
   noCaptainsText: {
     fontSize: 18,

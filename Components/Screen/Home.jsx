@@ -2,50 +2,27 @@ import React, { useState, useEffect, useContext } from 'react'; // Thêm useCont
 import { 
   View, 
   Text, 
-  Image, 
-  StyleSheet, 
-  TouchableOpacity, 
   FlatList, 
   TextInput, 
   Modal, 
-  ScrollView 
+  TouchableOpacity, 
+  ScrollView, 
+  StyleSheet 
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; // Import useFocusEffect để lắng nghe sự thay đổi khi quay lại trang
 import { PlayerContext } from '../AsyncStorage/playerContext'; // Import PlayerContext để quản lý danh sách yêu thích
-
-// Component hiển thị thông tin của mỗi cầu thủ
-const PlayerCard = ({
-  id, playerName, image, team, position, YoB, isFavorite, onFavoritePress, onPress, isCaptain
-}) => {
-  // Hàm tính tuổi cầu thủ dựa trên năm sinh
-  const calculateAge = (yearofBirth) => new Date().getFullYear() - yearofBirth;
-
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress}> 
-      {/* Hình ảnh cầu thủ với nút yêu thích */}
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: image }} style={styles.playerImage} resizeMode="cover" /> 
-        <TouchableOpacity style={styles.favoriteButton} onPress={() => onFavoritePress(id)}>
-          <Icon name={isFavorite ? "heart" : "heart-o"} size={24} color="red" /> 
-        </TouchableOpacity>
-      </View>
-
-      {/* Hiển thị thông tin chi tiết của cầu thủ */}
-      <View style={styles.playerInfo}>
-        <Text style={styles.playerName}>{playerName}</Text>
-        {isCaptain && <Text style={styles.captainText}>⚡ Captain</Text>} 
-        <Text style={styles.position}>{position}</Text>
-        <Text style={styles.stats}>Age: {calculateAge(YoB)}</Text> 
-      </View>
-    </TouchableOpacity>
-  );
-};
+import Card from '../UI/Card'; // Import component Card
 
 // Màn hình chính hiển thị danh sách cầu thủ
 export default function Home() {
   const navigation = useNavigation();
-  const { favoritePlayers, addPlayerToFavorites, removePlayerFromFavorites } = useContext(PlayerContext); // Lấy dữ liệu và hàm từ PlayerContext
+  const { 
+    favoritePlayers, 
+    addPlayerToFavorites, 
+    removePlayerFromFavorites,
+  } = useContext(PlayerContext); // Lấy dữ liệu và hàm từ PlayerContext
+
   const [players, setPlayers] = useState([]); // Lưu danh sách cầu thủ
   const [loading, setLoading] = useState(true); // Quản lý trạng thái loading
   const [error, setError] = useState(null); // Quản lý lỗi khi fetch dữ liệu
@@ -56,6 +33,14 @@ export default function Home() {
   useEffect(() => {
     fetchPlayers(); // Gọi hàm lấy dữ liệu cầu thủ khi component mount
   }, []);
+
+  // Đặt lại `selectedTeam` và `searchQuery` về mặc định khi quay lại trang
+  useFocusEffect(
+    React.useCallback(() => {
+      setSelectedTeam('All'); // Đặt lại đội được chọn là All
+      setSearchQuery(''); // Xóa từ khóa tìm kiếm
+    }, [])
+  );
 
   // Hàm lấy dữ liệu cầu thủ từ API
   const fetchPlayers = async () => {
@@ -101,7 +86,7 @@ export default function Home() {
 
   // Hàm render từng cầu thủ trong danh sách
   const renderItem = ({ item }) => (
-    <PlayerCard
+    <Card
       {...item}
       isFavorite={favoritePlayers.some((p) => p.id === item.id)}
       onFavoritePress={handleFavoritePress}
@@ -247,54 +232,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 20,
-    width: '48%',
-    elevation: 3,
-  },
-  imageContainer: {
-    position: 'relative',
-  },
-  playerImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-  },
-  favoriteButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 15,
-    padding: 5,
-  },
-  playerInfo: {
-    padding: 10,
-  },
-  playerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  position: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 5,
-  },
-  stats: {
-    fontSize: 12,
-    color: '#666',
-  },
-  captainText: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    borderRadius: 12,
-    padding: 4,
-    color: '#B22222',
-    marginBottom: 5,
   },
 });
