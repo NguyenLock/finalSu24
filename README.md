@@ -8,3 +8,8 @@ edit u code and enjoy it! Good Luck.
 - npm install @react-native-async-storage/async-storage @react-navigation/bottom-tabs @react-navigation/native @react-navigation/stack expo-status-bar react-native-safe-area-context react-native-screens react-native-vector-icons
 ## Mock API I Am Using
 - https://672239742108960b9cc37869.mockapi.io/footballteam
+## HOW TO SUMBIT
+- First create folder your studentCode 
+- Second copy all file without .expo and node_modules
+- paste in file your create and done
+## GOOD LUCK
