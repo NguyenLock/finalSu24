@@ -7,59 +7,35 @@ import {
   FlatList, 
   TouchableOpacity, 
   StyleSheet, 
-  Image, 
   Alert 
 } from 'react-native';
-import { PlayerContext } from '../AsyncStorage/playerContext';
+import { PlayerContext } from '../AsyncStorage/playerContext'; // Import context để lấy danh sách yêu thích
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-
-const PlayerCard = ({
-  id, playerName, image, position, YoB, isCaptain, onFavoritePress, onPress
-}) => {
-  const calculateAge = (yearofBirth) => new Date().getFullYear() - yearofBirth;
-
-  return (
-    <TouchableOpacity style={styles.card} onPress={onPress}>
-      <View style={styles.imageContainer}>
-        <Image source={{ uri: image }} style={styles.playerImage} resizeMode="cover" />
-        <TouchableOpacity style={styles.favoriteButton} onPress={() => onFavoritePress(id)}>
-          <Icon name="heart" size={24} color="red" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.playerInfo}>
-        <Text style={styles.playerName}>{playerName}</Text>
-        {isCaptain && <Text style={styles.captainText}>⚡ Captain</Text>}
-        <Text style={styles.position}>{position}</Text>
-        <Text style={styles.stats}>Age: {calculateAge(YoB)}</Text>
-      </View>
-    </TouchableOpacity>
-  );
-};
+import Card from '../UI/Card'; // Import component Card
 
 export default function Favorite() {
   const navigation = useNavigation();
   const { favoritePlayers, removePlayerFromFavorites, removeAllFavorites } = useContext(PlayerContext);
-  const [sortedPlayers, setSortedPlayers] = useState([]);// ham sort
+  const [sortedPlayers, setSortedPlayers] = useState([]); // Biến lưu danh sách cầu thủ đã sắp xếp
 
-  //ham sort
+  // Hàm sắp xếp danh sách cầu thủ yêu thích
   useEffect(() => {
     const sorted = [...favoritePlayers].sort((a, b) => b.id - a.id);
     setSortedPlayers(sorted);
   }, [favoritePlayers]);
 
-  //bam de vao detail
+  // Hàm xử lý khi bấm vào card cầu thủ để vào trang chi tiết
   const handleCardPress = (player) => {
     navigation.navigate('Detail', { playerData: player });
   };
 
-  //xoa khoi yeu thich
+  // Hàm xử lý khi bấm nút yêu thích để xóa khỏi danh sách
   const handleFavoritePress = (id) => {
     removePlayerFromFavorites(id);
   };
 
-
-  //ham xoa tat ca cac cau thu yeu thich voi > 2 thi moi hien thung rac
+  // Hiển thị hộp thoại xác nhận xóa tất cả cầu thủ yêu thích
   const handleRemoveAll = () => {
     Alert.alert(
       "Confirm",
@@ -71,14 +47,17 @@ export default function Favorite() {
     );
   };
 
+  // Hàm render từng cầu thủ trong danh sách
   const renderItem = ({ item }) => (
-    <PlayerCard
+    <Card
       {...item}
+      isFavorite={true} // Tất cả cầu thủ ở đây đều là yêu thích
       onFavoritePress={handleFavoritePress}
       onPress={() => handleCardPress(item)}
     />
   );
 
+  // Nếu danh sách yêu thích trống, hiển thị thông báo
   if (sortedPlayers.length === 0) {
     return (
       <View style={styles.centerContainer}>
@@ -96,10 +75,10 @@ export default function Favorite() {
         </TouchableOpacity>
       )}
       <FlatList
-        data={sortedPlayers}
+        data={sortedPlayers} // Hiển thị danh sách cầu thủ yêu thích đã sắp xếp
         renderItem={renderItem}
         keyExtractor={(item) => item.id.toString()}
-        numColumns={2}
+        numColumns={2} // Hiển thị 2 cột
         columnWrapperStyle={styles.row}
         contentContainerStyle={styles.listContainer}
       />
@@ -122,59 +101,9 @@ const styles = StyleSheet.create({
   row: {
     justifyContent: 'space-between',
   },
-  card: {
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    padding: 10,
-    marginTop: 20,
-    width: '48%',
-    elevation: 3,
-  },
-  imageContainer: {
-    position: 'relative',
-  },
-  playerImage: {
-    width: '100%',
-    height: 200,
-    borderRadius: 10,
-  },
-  favoriteButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.7)',
-    borderRadius: 15,
-    padding: 5,
-  },
-  playerInfo: {
-    padding: 10,
-  },
-  playerName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  position: {
-    fontSize: 14,
-    color: '#444',
-    marginBottom: 5,
-  },
-  stats: {
-    fontSize: 12,
-    color: '#666',
-  },
-  captainText: {
-    fontSize: 10,
-    fontWeight: 'bold',
-    backgroundColor: '#FFD700',
-    borderRadius: 12,
-    padding: 4,
-    color: '#B22222',
-    marginBottom: 5,
-  },
   trashIcon: {
     position: 'absolute',
-    top: 800,
+    top: 10,
     right: 10,
     zIndex: 1,
   },
